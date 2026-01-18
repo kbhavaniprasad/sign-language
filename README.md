@@ -1,6 +1,9 @@
-# Real-Time Sign Language Recognition System
+# Real-Time Hybrid Sign Language Recognition System
 
-A comprehensive deep learning system for real-time sign language recognition with a modern web interface. Trained on Indian Sign Language (ISL) dataset with **98.96% accuracy** on 36 classes (0-9, A-Z).
+A comprehensive deep learning system for real-time sign language recognition supporting both **static signs** and **dynamic gestures**. Features a modern web interface and hybrid model trained on:
+- **Static signs**: 36 classes (0-9, A-Z) - 98.96% accuracy
+- **Dynamic gestures**: 8 classes (loud, quiet, happy, sad, Beautiful, Ugly, Deaf, Blind)
+- **Total**: 44 classes with unified recognition
 
 ![Model Accuracy](logs/training_history.png)
 
@@ -9,14 +12,16 @@ A comprehensive deep learning system for real-time sign language recognition wit
 ## 🌟 Features
 
 ### Core Capabilities
+- ✅ **Hybrid Recognition**: Supports both static signs (36) and dynamic gestures (8)
 - ✅ **Real-Time Recognition**: 3 FPS camera capture with instant predictions
-- ✅ **High Accuracy**: 98.96% test accuracy on 36 classes
+- ✅ **High Accuracy**: 98.96% on static signs, unified model for 44 total classes
 - ✅ **Modern Web Interface**: Dark theme with glassmorphism design
 - ✅ **Auto-Launch**: Browser opens automatically when server starts
 - ✅ **Confidence Scores**: Visual confidence bars and top-3 predictions
 - ✅ **Prediction History**: Track recent high-confidence predictions
 - ✅ **Enhanced Preprocessing**: CLAHE for better contrast and lighting adaptation
 - ✅ **Temporal Smoothing**: 5-frame averaging for stable predictions
+- ✅ **Video Processing**: Automatic frame extraction from gesture videos
 
 ### Technical Features
 - Deep Learning: MobileNetV2-based CNN architecture
@@ -108,8 +113,10 @@ cd sign-language
 ```
 sign-language/
 ├── models/
-│   ├── sign_language_model.h5      # Trained model (98.96% accuracy)
-│   └── model_info.json             # Model metadata (36 classes)
+│   ├── sign_language_model.h5      # Static model (98.96% accuracy, 36 classes)
+│   ├── hybrid_sign_language_model.h5  # Hybrid model (44 classes)
+│   ├── model_info.json             # Model metadata
+│   └── hybrid_model_info.json      # Hybrid model metadata
 ├── web/
 │   ├── index.html                  # Web interface
 │   ├── style.css                   # Premium dark theme
@@ -128,18 +135,37 @@ sign-language/
 ├── scripts/
 │   ├── test_webcam.py              # Test camera & MediaPipe
 │   ├── test_model.py               # Test trained model
+│   ├── extract_video_frames.py     # Extract frames from videos
 │   └── create_sample_dataset.py    # Create sample data
-├── isl_dataset/                    # ISL dataset (36,000 images)
+├── isl_dataset/                    # Static ISL dataset (36,000 images)
 │   ├── train/                      # 28,800 images (800 per class)
+│   ├── val/                        # Validation images
 │   └── test/                       # 7,200 images (200 per class)
-├── logs/                           # Training visualizations
+├── Adjectives/                     # Dynamic gesture videos (8 classes)
+│   ├── 1. loud/                    # Video files (.MOV)
+│   ├── 2. quiet/
+│   ├── 3. happy/
+│   ├── 4. sad/
+│   ├── 5. Beautiful/
+│   ├── 6. Ugly/
+│   ├── 7. Deaf/
+│   └── 8. Blind/
+├── processed_dynamic_dataset/      # Extracted frames from videos
+│   ├── train/                      # Training frames
+│   ├── val/                        # Validation frames
+│   └── test/                       # Test frames
+├── logs/                           # Training visualizations & logs
 │   ├── training_history.png        # Accuracy/loss curves
-│   ├── confusion_matrix.png        # Confusion matrix
+│   ├── confusion_matrix.png        # Confusion matrix (36 classes)
+│   ├── confusion_matrix_44classes.png  # Hybrid confusion matrix
 │   ├── sample_images.png           # Sample predictions
-│   └── test_predictions.png        # Test set predictions
+│   ├── training_log_*.txt          # Detailed training logs
+│   └── training_history_*.json     # Training history data
 ├── config/
 │   └── config.yaml                 # Configuration file
 ├── train_model.ipynb               # Jupyter notebook for training
+├── train_hybrid_model.py           # Hybrid model training script
+├── HYBRID_NOTEBOOK_GUIDE.md        # Guide for notebook integration
 ├── main.py                         # CLI application
 ├── requirements.txt                # Python dependencies
 └── README.md                       # This file
@@ -189,54 +215,81 @@ python main.py --model models\sign_language_model.h5 --camera 0
 
 ### Dataset Structure
 
-Your dataset should follow this structure:
-
+**Static Signs Dataset:**
 ```
-dataset/
+isl_dataset/
 ├── train/
 │   ├── 0/
 │   ├── 1/
 │   ├── A/
 │   ├── B/
 │   └── ...
+├── val/
 └── test/
-    ├── 0/
-    ├── 1/
-    ├── A/
-    ├── B/
-    └── ...
+```
+
+**Dynamic Gestures Dataset:**
+```
+Adjectives/
+├── 1. loud/
+│   ├── video1.MOV
+│   ├── video2.MOV
+│   └── ...
+├── 2. quiet/
+├── 3. happy/
+└── ...
 ```
 
 ### Training Options
 
-**Option 1: Jupyter Notebook (Recommended)**
+**Option 1: Hybrid Model (Static + Dynamic)**
+
+```powershell
+# Step 1: Extract frames from videos
+python scripts\extract_video_frames.py
+
+# Step 2: Train hybrid model
+python train_hybrid_model.py
+```
+
+This trains on:
+- 36 static sign classes (0-9, A-Z)
+- 8 dynamic gesture classes (loud, quiet, happy, sad, Beautiful, Ugly, Deaf, Blind)
+- **Total: 44 classes**
+
+**Option 2: Static-Only Model**
 
 ```powershell
 jupyter notebook train_model.ipynb
 ```
 
 Run all cells to:
-- Load and preprocess dataset
-- Build MobileNetV2 + LSTM model
+- Load and preprocess static dataset
+- Build MobileNetV2 model
 - Train with data augmentation
 - Evaluate performance
 - Save model as `models/sign_language_model.h5`
 
-**Option 2: Python Script**
+**Option 3: Notebook Integration**
 
-```powershell
-python src\training\train_model.py
-```
+See `HYBRID_NOTEBOOK_GUIDE.md` for step-by-step instructions to integrate hybrid training into your Jupyter notebook.
 
 ### Training Results
 
-Our model achieved:
+**Static Model:**
 - **Test Accuracy**: 98.96%
 - **Test Loss**: 0.0301
 - **Classes**: 36 (0-9, A-Z)
 - **Training Time**: ~2-3 hours on GPU
 
+**Hybrid Model:**
+- **Total Classes**: 44 (36 static + 8 dynamic)
+- **Static Accuracy**: ~98%+
+- **Dynamic Accuracy**: ~85%+ (depends on video quality)
+- **Training Time**: ~4-6 hours on GPU
+
 ![Confusion Matrix](logs/confusion_matrix.png)
+![Hybrid Confusion Matrix](logs/confusion_matrix_44classes.png)
 
 ---
 
@@ -291,11 +344,23 @@ const API_URL = 'http://localhost:5000';  // API endpoint
 - **Recall**: 98.94%
 - **F1-Score**: 98.94%
 
-### Dataset
+### Datasets
+
+**Static Signs Dataset:**
 - **Total Images**: 36,000
 - **Training Set**: 28,800 images (800 per class)
 - **Test Set**: 7,200 images (200 per class)
-- **Classes**: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
+- **Classes (36)**: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
+
+**Dynamic Gestures Dataset:**
+- **Total Videos**: ~150 videos across 8 classes
+- **Extracted Frames**: ~1,500 frames (10 per video)
+- **Classes (8)**: loud, quiet, happy, sad, Beautiful, Ugly, Deaf, Blind
+- **Format**: .MOV videos → extracted frames (224×224)
+
+**Hybrid Model:**
+- **Total Classes**: 44 (36 static + 8 dynamic)
+- **Total Training Samples**: ~30,000+
 
 ![Sample Predictions](logs/sample_images.png)
 
@@ -446,14 +511,18 @@ For issues and questions:
 
 ## 🎯 Future Enhancements
 
+- [x] **Hybrid model for static + dynamic gestures** ✓
+- [x] **Video frame extraction pipeline** ✓
+- [x] **Comprehensive training logs** ✓
 - [ ] Support for more sign languages (ASL, BSL, etc.)
 - [ ] Mobile app (React Native)
 - [ ] Real-time translation to multiple languages
 - [ ] Text-to-speech integration
 - [ ] Cloud deployment
-- [ ] Improved model accuracy with larger dataset
+- [ ] Improved temporal modeling (LSTM/GRU for videos)
 - [ ] Video recording and playback
 - [ ] Gesture sequence recognition (words/sentences)
+- [ ] Expand dynamic gesture vocabulary
 
 ---
 
@@ -461,4 +530,4 @@ For issues and questions:
 
 **Repository**: https://github.com/kbhavaniprasad/sign-language
 
-**Model Accuracy**: 98.96% | **Classes**: 36 | **Real-Time**: 5 FPS
+**Static Model**: 98.96% (36 classes) | **Hybrid Model**: 44 classes (36 static + 8 dynamic) | **Real-Time**: 5 FPS
