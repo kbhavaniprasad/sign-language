@@ -31,18 +31,18 @@ wheels/
 .env
 .venv
 
-# Models (comment out to exclude from git)
-# *.h5
-# *.pkl
-# *.pth
-# *.onnx
+# Models
+*.h5
+*.pkl
+*.pth
+*.onnx
 
-# Dataset (comment out to exclude from git)
-# isl_dataset/
-# dataset/
-# data/
+# Dataset (comment out if you want to track dataset)
+dataset/
+data/
 
-# Logs and visualizations (keep training results)
+# Logs
+logs/
 *.log
 
 # IDE
@@ -59,21 +59,12 @@ Thumbs.db
 frontend/node_modules/
 frontend/build/
 frontend/dist/
-node_modules/
 
 # Temporary files
 temp/
 tmp/
 *.tmp
 
-# Audio files (TTS outputs)
+# Audio files
 *.mp3
 *.wav
-
-# Git lock files
-*.lock
-.git/index.lock
-
-# Cleanup summary (temporary)
-CLEANUP_SUMMARY.md
-

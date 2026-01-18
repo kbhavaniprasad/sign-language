@@ -20,6 +20,49 @@ CORS(app)
 # Global variables
 model = None
 class_names = []
+prediction_buffer = []  # Buffer for temporal smoothing
+BUFFER_SIZE = 5  # Number of predictions to average
+
+def preprocess_frame(frame):
+    """Enhanced preprocessing to match training conditions"""
+    # Resize to model input size
+    img_resized = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_AREA)
+    
+    # Convert BGR to RGB
+    img_rgb = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
+    
+    # Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) for better contrast
+    lab = cv2.cvtColor(img_resized, cv2.COLOR_BGR2LAB)
+    l, a, b = cv2.split(lab)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    l = clahe.apply(l)
+    enhanced = cv2.merge([l, a, b])
+    enhanced_rgb = cv2.cvtColor(enhanced, cv2.COLOR_LAB2RGB)
+    
+    # Normalize to [0, 1]
+    img_normalized = enhanced_rgb.astype('float32') / 255.0
+    
+    # Add batch dimension
+    img_batch = np.expand_dims(img_normalized, axis=0)
+    
+    return img_batch
+
+def smooth_predictions(current_predictions):
+    """Temporal smoothing of predictions using a buffer"""
+    global prediction_buffer
+    
+    # Add current predictions to buffer
+    prediction_buffer.append(current_predictions)
+    
+    # Keep buffer size limited
+    if len(prediction_buffer) > BUFFER_SIZE:
+        prediction_buffer.pop(0)
+    
+    # Average predictions over buffer
+    if len(prediction_buffer) > 0:
+        smoothed = np.mean(prediction_buffer, axis=0)
+        return smoothed
+    return current_predictions
 
 def load_model():
     """Load the trained model"""
@@ -76,21 +119,21 @@ def predict_frame():
         
         # Process frame with model
         if model is not None:
-            # Preprocess frame
-            img_resized = cv2.resize(frame, (224, 224))
-            img_rgb = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
-            img_normalized = img_rgb.astype('float32') / 255.0
-            img_batch = np.expand_dims(img_normalized, axis=0)
+            # Enhanced preprocessing
+            img_batch = preprocess_frame(frame)
             
             # Get predictions
             predictions = model.predict(img_batch, verbose=0)[0]
             
-            # Get top 3 predictions
-            top_3_indices = np.argsort(predictions)[-3:][::-1]
+            # Apply temporal smoothing
+            smoothed_predictions = smooth_predictions(predictions)
+            
+            # Get top 3 predictions from smoothed results
+            top_3_indices = np.argsort(smoothed_predictions)[-3:][::-1]
             top_3_predictions = [
                 {
                     'class': class_names[idx],
-                    'confidence': float(predictions[idx])
+                    'confidence': float(smoothed_predictions[idx])
                 }
                 for idx in top_3_indices
             ]
@@ -98,7 +141,13 @@ def predict_frame():
             # Get top prediction
             top_class_idx = top_3_indices[0]
             predicted_class = class_names[top_class_idx]
-            confidence = float(predictions[top_class_idx])
+            confidence = float(smoothed_predictions[top_class_idx])
+            
+            # Only return prediction if confidence is above threshold
+            min_confidence = 0.3  # Minimum confidence threshold
+            if confidence < min_confidence:
+                predicted_class = "-"
+                confidence = 0.0
             
             return jsonify({
                 'success': True,

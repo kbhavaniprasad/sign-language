@@ -9,19 +9,42 @@ A comprehensive deep learning system for real-time sign language recognition wit
 ## 🌟 Features
 
 ### Core Capabilities
-- ✅ **Real-Time Recognition**: 5 FPS camera capture with instant predictions
+- ✅ **Real-Time Recognition**: 3 FPS camera capture with instant predictions
 - ✅ **High Accuracy**: 98.96% test accuracy on 36 classes
 - ✅ **Modern Web Interface**: Dark theme with glassmorphism design
 - ✅ **Auto-Launch**: Browser opens automatically when server starts
 - ✅ **Confidence Scores**: Visual confidence bars and top-3 predictions
 - ✅ **Prediction History**: Track recent high-confidence predictions
+- ✅ **Enhanced Preprocessing**: CLAHE for better contrast and lighting adaptation
+- ✅ **Temporal Smoothing**: 5-frame averaging for stable predictions
 
 ### Technical Features
 - Deep Learning: MobileNetV2-based CNN architecture
-- Computer Vision: MediaPipe hand landmark detection
+- Computer Vision: Enhanced image preprocessing with CLAHE
 - Web Framework: Flask API with CORS support
 - Frontend: Vanilla HTML/CSS/JavaScript
 - Real-time Processing: WebRTC camera capture
+
+---
+
+## 🚀 Quick Start (Web Interface)
+
+### One-Command Launch
+
+```powershell
+cd sign-language
+python web\api_server.py
+```
+
+**Or double-click:** `web\start_server.bat`
+
+**What happens:**
+1. ✅ Flask API server starts
+2. ✅ Loads trained model (98.96% accuracy)
+3. ✅ **Browser opens automatically** with web interface
+4. ✅ Click "Start Camera" and begin recognition!
+
+**That's it!** No complex setup needed.
 
 ---
 

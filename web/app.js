@@ -1,7 +1,8 @@
 // Configuration
 const API_URL = 'http://localhost:5000';
-const CAPTURE_FPS = 5; // Frames per second to send to backend
+const CAPTURE_FPS = 3; // Reduced FPS for more stable predictions
 const MAX_HISTORY = 10; // Maximum number of predictions to keep in history
+const MIN_CONFIDENCE_FOR_HISTORY = 0.80; // Increased threshold for history
 
 // Global state
 let videoStream = null;
@@ -166,8 +167,8 @@ async function captureAndPredict() {
         const ctx = canvasElement.getContext('2d');
         ctx.drawImage(videoElement, 0, 0);
 
-        // Convert canvas to base64
-        const imageData = canvasElement.toDataURL('image/jpeg', 0.8);
+        // Convert canvas to base64 with higher quality
+        const imageData = canvasElement.toDataURL('image/jpeg', 0.95);
 
         // Send to API for prediction
         const response = await fetch(`${API_URL}/predict-frame`, {
@@ -228,8 +229,8 @@ function updatePredictionDisplay(data) {
 }
 
 function shouldAddToHistory(prediction, confidence) {
-    // Add if confidence is above 70% and prediction changed
-    if (confidence < 0.7) return false;
+    // Add if confidence is above threshold and prediction changed
+    if (confidence < MIN_CONFIDENCE_FOR_HISTORY) return false;
     if (!lastPrediction) return true;
     return lastPrediction.prediction !== prediction;
 }
