@@ -1,0 +1,79 @@
+# Sign Language Recognition System Configuration
+
+# Model Paths
+models:
+  sign_language_model: "models/sign_language_model.h5"
+  eye_intent_model: "models/eye_intent_model.h5"
+  
+# Dataset Paths
+dataset:
+  train_dir: "isl_dataset/train"
+  test_dir: "isl_dataset/test"
+  validation_split: 0.2
+  num_classes: 36  # ISL dataset has 36 classes
+  
+# Model Training Parameters
+training:
+  batch_size: 32
+  epochs: 100  # Increased for larger dataset
+  learning_rate: 0.001
+  early_stopping_patience: 15  # Increased patience
+  reduce_lr_patience: 7
+  image_size: [224, 224]
+  sequence_length: 30
+  
+# Recognition Parameters
+recognition:
+  confidence_threshold: 0.7
+  buffer_size: 30
+  fps: 30
+  min_detection_confidence: 0.5
+  min_tracking_confidence: 0.5
+  
+# Translation Settings
+translation:
+  default_language: "en"
+  supported_languages:
+    - en: "English"
+    - es: "Spanish"
+    - fr: "French"
+    - de: "German"
+    - hi: "Hindi"
+    - zh-cn: "Chinese"
+    - ja: "Japanese"
+    - ar: "Arabic"
+    - ru: "Russian"
+    - pt: "Portuguese"
+    
+# TTS Settings
+tts:
+  engine: "gtts"  # Options: gtts, coqui
+  speed: 1.0
+  volume: 0.8
+  
+# Eye Control Settings
+eye_control:
+  enabled: false
+  calibration_duration: 10
+  dwell_time: 1.5
+  blink_threshold: 0.2
+  sensitivity: 0.7
+  cursor_smoothing: 0.3
+  
+# API Settings
+api:
+  host: "0.0.0.0"
+  port: 5000
+  debug: true
+  cors_origins: ["http://localhost:3000"]
+  
+# Performance Settings
+performance:
+  use_gpu: false
+  max_workers: 4
+  frame_skip: 0
+  
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/app.log"
