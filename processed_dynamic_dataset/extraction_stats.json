@@ -1,0 +1,81 @@
+{
+  "classes": {
+    "1. loud": {
+      "videos": 42,
+      "train_videos": 29,
+      "val_videos": 6,
+      "test_videos": 7,
+      "train_frames": 290,
+      "val_frames": 60,
+      "test_frames": 70
+    },
+    "2. quiet": {
+      "videos": 42,
+      "train_videos": 29,
+      "val_videos": 6,
+      "test_videos": 7,
+      "train_frames": 290,
+      "val_frames": 60,
+      "test_frames": 70
+    },
+    "3. happy": {
+      "videos": 42,
+      "train_videos": 29,
+      "val_videos": 6,
+      "test_videos": 7,
+      "train_frames": 290,
+      "val_frames": 60,
+      "test_frames": 70
+    },
+    "4. sad": {
+      "videos": 16,
+      "train_videos": 11,
+      "val_videos": 2,
+      "test_videos": 3,
+      "train_frames": 110,
+      "val_frames": 20,
+      "test_frames": 30
+    },
+    "5. Beautiful": {
+      "videos": 16,
+      "train_videos": 11,
+      "val_videos": 2,
+      "test_videos": 3,
+      "train_frames": 110,
+      "val_frames": 20,
+      "test_frames": 30
+    },
+    "6. Ugly": {
+      "videos": 16,
+      "train_videos": 11,
+      "val_videos": 2,
+      "test_videos": 3,
+      "train_frames": 110,
+      "val_frames": 20,
+      "test_frames": 30
+    },
+    "7. Deaf": {
+      "videos": 16,
+      "train_videos": 11,
+      "val_videos": 2,
+      "test_videos": 3,
+      "train_frames": 110,
+      "val_frames": 20,
+      "test_frames": 30
+    },
+    "8. Blind": {
+      "videos": 16,
+      "train_videos": 11,
+      "val_videos": 2,
+      "test_videos": 3,
+      "train_frames": 110,
+      "val_frames": 20,
+      "test_frames": 30
+    }
+  },
+  "total_videos": 206,
+  "total_frames": 2060,
+  "train_frames": 1420,
+  "val_frames": 280,
+  "test_frames": 360
+}

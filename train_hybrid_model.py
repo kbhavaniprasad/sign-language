@@ -293,8 +293,12 @@ class HybridDataGenerator(keras.utils.Sequence):
         if self.static_gen and idx < self.static_batches:
             # Get static batch
             images, labels = self.static_gen[idx % len(self.static_gen)]
-            # Labels are already one-hot for classes 0-35
-            return images, labels
+            # Pad labels from 36 classes to 44 classes (add 8 zeros for dynamic classes)
+            # Convert to class indices first
+            class_indices = np.argmax(labels, axis=1)
+            # Convert back to one-hot with 44 classes
+            padded_labels = keras.utils.to_categorical(class_indices, num_classes=config.TOTAL_CLASSES)
+            return images, padded_labels
         elif self.dynamic_gen:
             # Get dynamic batch
             dynamic_idx = idx - self.static_batches
@@ -312,7 +316,9 @@ class HybridDataGenerator(keras.utils.Sequence):
         else:
             # Fallback to static
             images, labels = self.static_gen[idx % len(self.static_gen)]
-            return images, labels
+            class_indices = np.argmax(labels, axis=1)
+            padded_labels = keras.utils.to_categorical(class_indices, num_classes=config.TOTAL_CLASSES)
+            return images, padded_labels
     
     def on_epoch_end(self):
         if self.static_gen:
